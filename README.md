@@ -12,7 +12,7 @@ npm i -S botframework-watson-recognizer
 
 ## Usage
 
-Usage is the same as with LuisRecognizer, only Waton's service credential and Workspace Id are needed:
+Usage is the same as with LuisRecognizer, only Watson's service credential and Workspace Id are needed:
 
 ```ts
 let recognizer = new WatsonRecognizer('<user>', '<password>', '<workspace-id>')
@@ -39,6 +39,11 @@ bot.dialog(`/greeting`,
 
 - Unit tests
 - MAYBE support Watson's Dialog 
+
+
+## Check us out!
+
+https://www.thebotmakers.com
 
 ## License
 
