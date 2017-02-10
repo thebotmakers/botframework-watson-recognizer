@@ -11,71 +11,30 @@ var WatsonRecognizer = (function () {
             version_date: ConversationV1.VERSION_DATE_2016_09_20
         });
     }
-    WatsonRecognizer.prototype.recognize = function (context, cb) {
+    WatsonRecognizer.prototype.recognize = function (context, callback) {
         var result = { score: 0.0, intent: null };
         if (context && context.message && context.message.text) {
-            var utterance = context.message.text;
-            WatsonRecognizer.recognize(utterance, function (err, intents, entities) {
+            this.conversation.message({
+                input: { text: context.message.text },
+                workspace_id: this.workspace
+            }, function (err, response) {
                 if (!err) {
-                    result.intents = intents;
-                    result.entities = entities;
-                    var top;
-                    intents.forEach(function (intent) {
-                        if (top) {
-                            if (intent.score > top.score) {
-                                top = intent;
-                            }
-                        }
-                        else {
-                            top = intent;
-                        }
-                    });
-                    if (top) {
-                        result.score = top.score;
-                        result.intent = top.intent;
-                        switch (top.intent.toLowerCase()) {
-                            case 'builtin.intent.none':
-                            case 'none':
-                                result.score = 0.1;
-                                break;
-                        }
-                    }
-                    cb(null, result);
+                    // map entities to botbuilder format
+                    result.entities = response.entities.map(function (e) { return ({ type: e.entity, entity: e.value, startIndex: e.location[0], endIndex: e.location[1] }); });
+                    // map intents to botbuilder format
+                    result.intents = response.intents.map(function (i) { return ({ intent: i.intent, score: i.confidence }); });
+                    var top_1 = result.intents.sort(function (a, b) { return a.score - b.score; })[0];
+                    result.score = top_1.score;
+                    result.intent = top_1.intent;
+                    callback(null, result);
                 }
                 else {
-                    cb(err, null);
-                }
-            }, this.conversation, this.workspace);
-        }
-        else {
-            cb(null, result);
-        }
-    };
-    //TODO: check why this is an static function, if is not used as such, make it a local function
-    WatsonRecognizer.recognize = function (utterance, callback, conversation, workspace) {
-        try {
-            conversation.message({
-                input: { text: utterance },
-                workspace_id: workspace
-            }, function (err, response) {
-                try {
-                    if (!err) {
-                        var intents = response.intents.map(function (i) { return ({ intent: i.intent, score: i.confidence }); });
-                        var entities = response.entities.map(function (e) { return ({ entity: e.value, type: e.entity }); });
-                        callback(null, intents, entities);
-                    }
-                    else {
-                        var m = err.toString();
-                        callback(err instanceof Error ? err : new Error(m));
-                    }
-                }
-                catch (e) {
-                    console.error(e.toString());
+                    callback(err, null);
                 }
             });
         }
-        catch (err) {
-            callback(err instanceof Error ? err : new Error(err.toString()));
+        else {
+            callback(null, result);
         }
     };
     return WatsonRecognizer;
