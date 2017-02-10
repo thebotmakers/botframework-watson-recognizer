@@ -6,5 +6,5 @@ export declare class WatsonRecognizer {
     conversation: any;
     constructor(username: string, password: string, workspace: string);
     recognize(context: any, cb: any): void;
-    static recognize(utterance: any, callback: any, workspace: any): void;
+    static recognize(utterance: any, callback: any, conversation: any, workspace: any): void;
 }

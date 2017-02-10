@@ -45,14 +45,14 @@ var WatsonRecognizer = (function () {
                 else {
                     cb(err, null);
                 }
-            }, this.workspace);
+            }, this.conversation, this.workspace);
         }
         else {
             cb(null, result);
         }
     };
-    //TODO: check why this is an static function
-    WatsonRecognizer.recognize = function (utterance, callback, workspace) {
+    //TODO: check why this is an static function, if is not used as such, make it a local function
+    WatsonRecognizer.recognize = function (utterance, callback, conversation, workspace) {
         try {
             conversation.message({
                 input: { text: utterance },
