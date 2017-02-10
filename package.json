@@ -6,6 +6,7 @@
   "typs": "dist/index.d.ts",
   "dependencies": {
     "@types/node": "^7.0.5",
+    "botbuilder": "^3.6.0",
     "watson-developer-cloud": "^2.18.0"
   },
   "devDependencies": {},
