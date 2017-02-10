@@ -2,9 +2,11 @@
   "name": "botframework-watson-recognizer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "typs": "dist/index.d.ts",
   "dependencies": {
-    "watson-developer-cloud": "^2.14.3"
+    "@types/node": "^7.0.5",
+    "watson-developer-cloud": "^2.18.0"
   },
   "devDependencies": {},
   "scripts": {
