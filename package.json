@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
-  "typs": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "dependencies": {
     "@types/node": "^7.0.5",
     "botbuilder": "^3.6.0",
