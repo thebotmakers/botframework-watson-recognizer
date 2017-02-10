@@ -54,16 +54,16 @@ export class WatsonRecognizer {
                     cb(err, null);
                 }
 
-            }, this.workspace);
+            }, this.conversation, this.workspace);
         }
         else {
             cb(null, result);
         }
     }
 
-    //TODO: check why this is an static function
+    //TODO: check why this is an static function, if is not used as such, make it a local function
 
-    static recognize(utterance, callback, workspace) {
+    static recognize(utterance, callback, conversation, workspace) {
 
         try {
 
