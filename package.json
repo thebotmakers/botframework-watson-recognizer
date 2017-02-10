@@ -11,8 +11,10 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "git checkout -- dist",
     "build": "./node_modules/.bin/tsc -p .",
-    "version": "npm build && git add -A dist",
+    "preversion": "npm run clean",
+    "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags"
   },
   "repository": {
