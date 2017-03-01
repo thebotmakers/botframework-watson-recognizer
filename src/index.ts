@@ -5,6 +5,7 @@ import { IIntentRecognizer, IIntentRecognizerResult, IIntent, IEntity } from 'bo
 export class WatsonRecognizer implements IIntentRecognizer {
 
     conversation: any;
+    onRecognizeCallback: any;
 
     constructor(private username: string, private password: string, private workspace: string) {
 
@@ -13,16 +14,21 @@ export class WatsonRecognizer implements IIntentRecognizer {
             password: password,
             version_date: ConversationV1.VERSION_DATE_2016_09_20
         });
-    }
+
+    };
+
+    setCallback(onRecognizeCallback: any) {
+        this.onRecognizeCallback = onRecognizeCallback;
+    };
+
 
     recognize(context, callback) {
 
         var result: IIntentRecognizerResult = { score: 0.0, intent: null };
-
         if (context && context.message && context.message.text) {
-
+            let textClean = context.message.text.replace(/(\r\n|\n|\r)/gm, " ")
             this.conversation.message({
-                input: { text: context.message.text },
+                input: { text: textClean },
                 workspace_id: this.workspace
             }, (err, response) => {
 
@@ -34,14 +40,21 @@ export class WatsonRecognizer implements IIntentRecognizer {
 
                     // map intents to botbuilder format
 
-                    result.intents = (response.intents as Array<{ intent, confidence }>).map<IIntent>(i => ({ intent: i.intent, score: i.confidence }))
+                    result.intents = (response.intents as Array<any>).map<IIntent>(i => ({ intent: i.intent, score: i.confidence }))
 
                     let top = result.intents.sort((a, b) => a.score - b.score)[0]
 
                     result.score = top.score;
                     result.intent = top.intent;
 
-                    callback(null, result)
+                    //Add intent and score to message object
+                    context.message.intent = top.intent;
+                    context.message.score = top.score;
+
+                    if (this.onRecognizeCallback) {
+                        this.onRecognizeCallback(context);
+                    }
+                    callback(null, result);
                 }
                 else {
                     callback(err, null);
@@ -51,5 +64,5 @@ export class WatsonRecognizer implements IIntentRecognizer {
         else {
             callback(null, result);
         }
-    }
+    };
 }
