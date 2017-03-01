@@ -11,11 +11,18 @@ var WatsonRecognizer = (function () {
             version_date: ConversationV1.VERSION_DATE_2016_09_20
         });
     }
+    ;
+    WatsonRecognizer.prototype.setCallback = function (onRecognizeCallback) {
+        this.onRecognizeCallback = onRecognizeCallback;
+    };
+    ;
     WatsonRecognizer.prototype.recognize = function (context, callback) {
+        var _this = this;
         var result = { score: 0.0, intent: null };
         if (context && context.message && context.message.text) {
+            var textClean = context.message.text.replace(/(\r\n|\n|\r)/gm, " ");
             this.conversation.message({
-                input: { text: context.message.text },
+                input: { text: textClean },
                 workspace_id: this.workspace
             }, function (err, response) {
                 if (!err) {
@@ -26,6 +33,12 @@ var WatsonRecognizer = (function () {
                     var top_1 = result.intents.sort(function (a, b) { return a.score - b.score; })[0];
                     result.score = top_1.score;
                     result.intent = top_1.intent;
+                    //Add intent and score to message object
+                    context.message.intent = top_1.intent;
+                    context.message.score = top_1.score;
+                    if (_this.onRecognizeCallback) {
+                        _this.onRecognizeCallback(context);
+                    }
                     callback(null, result);
                 }
                 else {
@@ -37,6 +50,7 @@ var WatsonRecognizer = (function () {
             callback(null, result);
         }
     };
+    ;
     return WatsonRecognizer;
 }());
 exports.WatsonRecognizer = WatsonRecognizer;
