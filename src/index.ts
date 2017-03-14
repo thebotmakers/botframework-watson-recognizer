@@ -21,10 +21,16 @@ export class WatsonRecognizer implements IIntentRecognizer {
         this.onRecognizeCallback = onRecognizeCallback;
     };
 
-
     recognize(context, callback) {
 
+        // Disable bot responses to talk to human.
+
+        if (!context.message.user.handOff) {
+            return;
+        }
+
         var result: IIntentRecognizerResult = { score: 0.0, intent: null };
+
         if (context && context.message && context.message.text) {
             let textClean = context.message.text.replace(/(\r\n|\n|\r)/gm, " ")
             this.conversation.message({

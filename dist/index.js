@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ConversationV1 = require('watson-developer-cloud/conversation/v1');
 var WatsonRecognizer = (function () {
     function WatsonRecognizer(username, password, workspace) {
@@ -17,7 +18,11 @@ var WatsonRecognizer = (function () {
     };
     ;
     WatsonRecognizer.prototype.recognize = function (context, callback) {
+        // Disable bot responses to talk to human.
         var _this = this;
+        if (!context.message.user.handOff) {
+            return;
+        }
         var result = { score: 0.0, intent: null };
         if (context && context.message && context.message.text) {
             var textClean = context.message.text.replace(/(\r\n|\n|\r)/gm, " ");
