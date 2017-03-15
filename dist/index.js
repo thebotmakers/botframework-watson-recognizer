@@ -20,7 +20,7 @@ var WatsonRecognizer = (function () {
     WatsonRecognizer.prototype.recognize = function (context, callback) {
         // Disable bot responses to talk to human.
         var _this = this;
-        if (!context.message.user.handOff) {
+        if (context.message.user.handOff) {
             return;
         }
         var result = { score: 0.0, intent: null };
