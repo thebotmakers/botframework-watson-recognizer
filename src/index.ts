@@ -27,7 +27,7 @@ export class WatsonRecognizer implements IIntentRecognizer {
 
         // Disable bot responses to talk to human.
 
-        if (!context.message.user.handOff) {
+        if (context.message.user.handOff) {
             return;
         }
 
