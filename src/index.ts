@@ -57,8 +57,8 @@ export class WatsonRecognizer implements IIntentRecognizer {
                     result.intent = top.intent;
 
                     //Add intent and score to message object
-                    context.message.intent = top.intent;
-                    context.message.score = top.score;
+                    context.message.intent = result.intent;
+                    context.message.score = result.score;
 
                     if (this.onRecognizeCallback) {
                         this.onRecognizeCallback(context);
