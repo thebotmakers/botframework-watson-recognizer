@@ -6,9 +6,11 @@ export class WatsonRecognizer implements IIntentRecognizer {
 
     conversation: any;
     onRecognizeCallback: any;
+    private intentThreshold: number;
 
-    constructor(private username: string, private password: string, private workspace: string) {
+    constructor(private username: string, private password: string, private workspace: string, intentThreshold: number) {
 
+        this.intentThreshold = intentThreshold;
         this.conversation = new ConversationV1({
             username: username,
             password: password,
@@ -50,7 +52,8 @@ export class WatsonRecognizer implements IIntentRecognizer {
 
                     let top = result.intents.sort((a, b) => a.score - b.score)[0]
 
-                    result.score = top.score;
+                    //filter intents with less than intentThreshold
+                    result.score = top.score < this.intentThreshold ? 0 : top.score;
                     result.intent = top.intent;
 
                     //Add intent and score to message object
