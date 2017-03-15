@@ -5,7 +5,8 @@ export declare class WatsonRecognizer implements IIntentRecognizer {
     private workspace;
     conversation: any;
     onRecognizeCallback: any;
-    constructor(username: string, password: string, workspace: string);
+    private intentThreshold;
+    constructor(username: string, password: string, workspace: string, intentThreshold: number);
     setCallback(onRecognizeCallback: any): void;
     recognize(context: any, callback: any): void;
 }

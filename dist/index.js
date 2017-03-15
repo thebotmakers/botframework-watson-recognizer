@@ -1,11 +1,11 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var ConversationV1 = require('watson-developer-cloud/conversation/v1');
 var WatsonRecognizer = (function () {
-    function WatsonRecognizer(username, password, workspace) {
+    function WatsonRecognizer(username, password, workspace, intentThreshold) {
         this.username = username;
         this.password = password;
         this.workspace = workspace;
+        this.intentThreshold = intentThreshold;
         this.conversation = new ConversationV1({
             username: username,
             password: password,
@@ -36,11 +36,12 @@ var WatsonRecognizer = (function () {
                     // map intents to botbuilder format
                     result.intents = response.intents.map(function (i) { return ({ intent: i.intent, score: i.confidence }); });
                     var top_1 = result.intents.sort(function (a, b) { return a.score - b.score; })[0];
-                    result.score = top_1.score;
+                    //filter intents with less than intentThreshold
+                    result.score = top_1.score < _this.intentThreshold ? 0 : top_1.score;
                     result.intent = top_1.intent;
                     //Add intent and score to message object
-                    context.message.intent = top_1.intent;
-                    context.message.score = top_1.score;
+                    context.message.intent = result.intent;
+                    context.message.score = result.score;
                     if (_this.onRecognizeCallback) {
                         _this.onRecognizeCallback(context);
                     }
