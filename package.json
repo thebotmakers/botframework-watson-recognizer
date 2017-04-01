@@ -7,6 +7,7 @@
   "dependencies": {
     "@types/node": "^7.0.5",
     "botbuilder": "^3.6.0",
+    "lodash": "^4.17.4",
     "watson-developer-cloud": "^2.18.0"
   },
   "devDependencies": {},
