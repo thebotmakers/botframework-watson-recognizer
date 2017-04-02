@@ -1,13 +1,15 @@
 {
   "name": "botframework-watson-recognizer",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
+    "@types/lodash": "^4.14.61",
     "@types/node": "^7.0.5",
     "botbuilder": "^3.6.0",
     "lodash": "^4.17.4",
+    "typescript": "^2.2.2",
     "watson-developer-cloud": "^2.18.0"
   },
   "devDependencies": {},

@@ -1,15 +1,14 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var _ = require("lodash");
 var ConversationV1 = require('watson-developer-cloud/conversation/v1');
-var _ = require('lodash');
 var WatsonRecognizer = (function () {
     function WatsonRecognizer(models, intentThreshold) {
         var _this = this;
         this.models = models;
-        debugger;
         this.intentThreshold = intentThreshold;
-        this.conversationModels = [];
+        this.conversationModels = {};
         _.each(models, function (model, key) {
-            debugger;
             var conversation = new ConversationV1({
                 username: model.username,
                 password: model.password,
@@ -39,7 +38,6 @@ var WatsonRecognizer = (function () {
             var locale = context.locale || 'es-ES';
             locale = _.split(locale, '-', 1);
             var conversationModel = this.conversationModels[locale]; // ? this.conversationModels[locale] : this.models['*'];
-            debugger;
             if (conversationModel) {
                 conversationModel.conversation.message({
                     input: { text: textClean },

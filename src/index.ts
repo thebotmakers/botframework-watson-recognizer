@@ -1,7 +1,6 @@
-var ConversationV1 = require('watson-developer-cloud/conversation/v1');
-
 import * as _ from 'lodash';
-import { IIntentRecognizer, IIntentRecognizerResult, IIntent, IEntity } from 'botbuilder'
+var ConversationV1 = require('watson-developer-cloud/conversation/v1');
+import { IIntentRecognizer, IIntentRecognizerResult, IIntent, IEntity } from 'botbuilder';
 
 export interface IWatsonModel {
     username: string;
@@ -21,22 +20,22 @@ interface ConversationModel {
 export class WatsonRecognizer implements IIntentRecognizer {
 
     onRecognizeCallback: any;
-    private conversationModels: _.Map<ConversationModel>;
+    private conversationModels: _.Dictionary<ConversationModel>;
     private intentThreshold: number;
 
     constructor(private models: IWatsonModelMap, intentThreshold: number) {
 
-        debugger;
         this.intentThreshold = intentThreshold;
 
-        this.conversationModels = [];
+        this.conversationModels = {};
         _.each(models, (model, key) => {
-            debugger;
+
             var conversation = new ConversationV1({
                 username: model.username,
                 password: model.password,
                 version_date: ConversationV1.VERSION_DATE_2016_09_20
             });
+
             this.conversationModels[key] = {
                 workspaceId: model.workspaceId,
                 conversation: conversation
@@ -66,7 +65,6 @@ export class WatsonRecognizer implements IIntentRecognizer {
             locale = _.split(locale, '-', 1);
             var conversationModel = this.conversationModels[locale];// ? this.conversationModels[locale] : this.models['*'];
 
-            debugger;
             if (conversationModel) {
                 conversationModel.conversation.message({
                     input: { text: textClean },
