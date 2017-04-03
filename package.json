@@ -30,5 +30,11 @@
   "bugs": {
     "url": "https://github.com/thebotmakers/botframework-watson-recognizer/issues"
   },
-  "homepage": "https://github.com/thebotmakers/botframework-watson-recognizer#readme"
+  "homepage": "https://github.com/thebotmakers/botframework-watson-recognizer#readme",
+  "keywords": [
+    "watson",
+    "botframework",
+    "recognizer",
+    "bot"
+  ]
 }
