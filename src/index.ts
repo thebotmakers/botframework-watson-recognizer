@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 var ConversationV1 = require('watson-developer-cloud/conversation/v1');
 import { IIntentRecognizer, IIntentRecognizerResult, IIntent, IEntity } from 'botbuilder';
+import { EventEmitter } from 'events';
 
 export interface IWatsonModel {
     username: string;
@@ -17,13 +18,13 @@ interface ConversationModel {
     conversation: any;
 }
 
-export class WatsonRecognizer implements IIntentRecognizer {
+export class WatsonRecognizer extends EventEmitter implements IIntentRecognizer {
 
-    onRecognizeCallback: any;
     private conversationModels: _.Dictionary<ConversationModel>;
     private intentThreshold: number;
 
     constructor(private models: IWatsonModelMap, intentThreshold: number) {
+        super();
 
         this.intentThreshold = intentThreshold;
 
@@ -43,14 +44,9 @@ export class WatsonRecognizer implements IIntentRecognizer {
         });
     };
 
-    setCallback(onRecognizeCallback: any) {
-        this.onRecognizeCallback = onRecognizeCallback;
-    };
-
     recognize(context, callback) {
 
         // Disable bot responses to talk to human.
-
         if (context.message.user.handOff) {
             return;
         }
@@ -63,7 +59,7 @@ export class WatsonRecognizer implements IIntentRecognizer {
             // get Locale model on Watson
             var locale = context.locale || 'es-ES';
             locale = _.split(locale, '-', 1);
-            var conversationModel = this.conversationModels[locale];// ? this.conversationModels[locale] : this.models['*'];
+            var conversationModel = this.conversationModels[locale];
 
             if (conversationModel) {
                 conversationModel.conversation.message({
@@ -74,11 +70,9 @@ export class WatsonRecognizer implements IIntentRecognizer {
                     if (!err) {
 
                         // map entities to botbuilder format
-
                         result.entities = (response.entities as Array<any>).map<IEntity>(e => ({ type: e.entity, entity: e.value, startIndex: e.location[0], endIndex: e.location[1] }))
 
                         // map intents to botbuilder format
-
                         result.intents = (response.intents as Array<any>).map<IIntent>(i => ({ intent: i.intent, score: i.confidence }))
 
                         let top = result.intents.sort((a, b) => a.score - b.score)[0]
@@ -91,9 +85,7 @@ export class WatsonRecognizer implements IIntentRecognizer {
                         context.message.intent = result.intent;
                         context.message.score = result.score;
 
-                        if (this.onRecognizeCallback) {
-                            this.onRecognizeCallback(context);
-                        }
+                        this.emit('onRecognize', context);
                         callback(null, result);
                     }
                     else {

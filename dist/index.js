@@ -1,13 +1,25 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("lodash");
 var ConversationV1 = require('watson-developer-cloud/conversation/v1');
-var WatsonRecognizer = (function () {
+var events_1 = require("events");
+var WatsonRecognizer = (function (_super) {
+    __extends(WatsonRecognizer, _super);
     function WatsonRecognizer(models, intentThreshold) {
-        var _this = this;
-        this.models = models;
-        this.intentThreshold = intentThreshold;
-        this.conversationModels = {};
+        var _this = _super.call(this) || this;
+        _this.models = models;
+        _this.intentThreshold = intentThreshold;
+        _this.conversationModels = {};
         _.each(models, function (model, key) {
             var conversation = new ConversationV1({
                 username: model.username,
@@ -19,15 +31,12 @@ var WatsonRecognizer = (function () {
                 conversation: conversation
             };
         });
+        return _this;
     }
     ;
-    WatsonRecognizer.prototype.setCallback = function (onRecognizeCallback) {
-        this.onRecognizeCallback = onRecognizeCallback;
-    };
-    ;
     WatsonRecognizer.prototype.recognize = function (context, callback) {
-        // Disable bot responses to talk to human.
         var _this = this;
+        // Disable bot responses to talk to human.
         if (context.message.user.handOff) {
             return;
         }
@@ -37,7 +46,7 @@ var WatsonRecognizer = (function () {
             // get Locale model on Watson
             var locale = context.locale || 'es-ES';
             locale = _.split(locale, '-', 1);
-            var conversationModel = this.conversationModels[locale]; // ? this.conversationModels[locale] : this.models['*'];
+            var conversationModel = this.conversationModels[locale];
             if (conversationModel) {
                 conversationModel.conversation.message({
                     input: { text: textClean },
@@ -55,9 +64,7 @@ var WatsonRecognizer = (function () {
                         //Add intent and score to message object
                         context.message.intent = result.intent;
                         context.message.score = result.score;
-                        if (_this.onRecognizeCallback) {
-                            _this.onRecognizeCallback(context);
-                        }
+                        _this.emit('onRecognize', context);
                         callback(null, result);
                     }
                     else {
@@ -75,6 +82,6 @@ var WatsonRecognizer = (function () {
     };
     ;
     return WatsonRecognizer;
-}());
+}(events_1.EventEmitter));
 exports.WatsonRecognizer = WatsonRecognizer;
 //# sourceMappingURL=index.js.map
