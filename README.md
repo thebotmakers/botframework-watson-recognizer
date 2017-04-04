@@ -12,10 +12,21 @@ npm i -S botframework-watson-recognizer
 
 ## Usage
 
-Usage is the same as with LuisRecognizer, only Watson's service credential and Workspace Id are needed:
+Usage is the same as with LuisRecognizer, only Watson's service credential and Workspace Id are needed.
+
+Now Watson recognizer has multi language support.
 
 ```ts
-let recognizer = new WatsonRecognizer('<user>', '<password>', '<workspace-id>')
+import { WatsonRecognizer, IWatsonModelMap, IWatsonModel } from 'botframework-watson-recognizer';
+
+//Map all your language models here, you can set only one, it's ok
+let watsonModelMap: IWatsonModelMap = {
+    en: { username: '<user_en>', password: '<password_en>', workspaceId: '<workspace-id_en>' },
+    es: { username: '<user_es>', password: '<password_es>', workspaceId: '<workspace-id_es>' }
+};
+
+let recognizer = new WatsonRecognizer(watsonModelMap, process.env.INTENT_THRESHOLD);
+
 let intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
 bot.dialog(`/`, intents)
